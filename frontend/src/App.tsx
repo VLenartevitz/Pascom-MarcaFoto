@@ -1,5 +1,25 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Config, ScanResult, PreviewResult, BatchProgress, BatchReport, POSITIONS, FORMATS, PositionValue, FormatValue } from './types';
+
+// Tipos para o backend Wails
+interface Backend {
+  ValidateConfig(cfg: Config): Promise<string | null>;
+  ScanFolder(path: string): Promise<ScanResult>;
+  SelectInputFolder(): Promise<string>;
+  SelectLogoFile(): Promise<string>;
+  SelectOutputFolder(): Promise<string>;
+  SetLogo(path: string): Promise<string | null>;
+  GetLogoPath(): Promise<string>;
+  SetOutputDir(path: string): Promise<string | null>;
+  GetOutputDir(): Promise<string>;
+  GeneratePreview(photoPath: string, cfg: Config, maxWidth: number): Promise<PreviewResult>;
+  StartBatch(inputDir: string, cfg: Config): Promise<BatchReport>;
+  CancelBatch(): Promise<void>;
+  IsProcessing(): Promise<boolean>;
+  OpenFolder(path: string): Promise<string | null>;
+  GetVersion(): Promise<string>;
+  ReadFileAsBase64(path: string): Promise<string>;
+}
 
 // Tipos para eventos do Wails
 interface WailsEvents {
@@ -10,7 +30,7 @@ interface WailsEvents {
 
 declare global {
   interface Window {
-    backend: any;
+    backend: Backend;
     events: WailsEvents;
   }
 }
@@ -303,7 +323,7 @@ function App() {
               <p className="step-desc">Importe sua logo (PNG com transparência recomendado)</p>
               
               <button 
-                className={`btn ${logoPath ? 'btn-secondary' : 'btn-primary'} btn-large`}
+                className={tn  btn-large}
                 onClick={handleSelectLogo}
               >
                 {logoPath ? '🔄 Trocar Logo' : '📎 Selecionar Logo'}
@@ -313,7 +333,7 @@ function App() {
                 <div className="logo-preview-wrapper">
                   <img 
                     ref={logoPreviewRef}
-                    src={`data:image/png;base64,${logoPreview}`} 
+                    src={data:image/png;base64,} 
                     alt="Logo preview"
                     className="logo-preview"
                   />
@@ -432,7 +452,7 @@ function App() {
               <p className="step-desc">Onde salvar as fotos processadas (originais nunca são alterados)</p>
               
               <button 
-                className={`btn ${outputDir ? 'btn-secondary' : 'btn-primary'} btn-large`}
+                className={tn  btn-large}
                 onClick={handleSelectOutputFolder}
               >
                 {outputDir ? '🔄 Alterar Pasta' : '📂 Selecionar Pasta de Saída'}
@@ -464,7 +484,7 @@ function App() {
               {previewImg ? (
                 <img
                   ref={previewPhotoRef}
-                  src={`data:image/${config.format === 'png' ? 'png' : 'jpeg'};base64,${previewImg.base64}`}
+                  src={data:image/;base64,}
                   alt="Preview com marca d'água"
                   className="preview-image"
                 />
@@ -491,7 +511,7 @@ function App() {
                 onClick={handleStartBatch}
                 disabled={processing}
               >
-                {processing ? 'Processando...' : `Iniciar Processamento (${scanResult?.count || 0} fotos)`}
+                {processing ? 'Processando...' : Iniciar Processamento ( fotos)}
               </button>
             </div>
           </section>
@@ -508,7 +528,7 @@ function App() {
                   <div className="progress-bar">
                     <div 
                       className="progress-fill" 
-                      style={{ width: `${batchProgress.total > 0 ? (batchProgress.done / batchProgress.total) * 100 : 0}%` }}
+                      style={{ width: \% }}
                     />
                   </div>
                   <div className="progress-stats">
