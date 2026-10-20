@@ -67,3 +67,29 @@ export const FORMATS = [
 
 export type PositionValue = typeof POSITIONS[number]['value'];
 export type FormatValue = typeof FORMATS[number]['value'];
+
+// Tipos para o backend Wails (evita conflito com tipos gerados)
+export interface Backend {
+  ValidateConfig(cfg: Config): Promise<string | null>;
+  ScanFolder(path: string): Promise<ScanResult>;
+  SelectInputFolder(): Promise<string>;
+  SelectLogoFile(): Promise<string>;
+  SelectOutputFolder(): Promise<string>;
+  SetLogo(path: string): Promise<string | null>;
+  GetLogoPath(): Promise<string>;
+  SetOutputDir(path: string): Promise<string | null>;
+  GetOutputDir(): Promise<string>;
+  GeneratePreview(photoPath: string, cfg: Config, maxWidth: number): Promise<PreviewResult>;
+  StartBatch(inputDir: string, cfg: Config): Promise<BatchReport>;
+  CancelBatch(): Promise<void>;
+  IsProcessing(): Promise<boolean>;
+  OpenFolder(path: string): Promise<string | null>;
+  GetVersion(): Promise<string>;
+  ReadFileAsBase64(path: string): Promise<string>;
+}
+
+export interface WailsEvents {
+  on: (event: string, callback: (...args: any[]) => void) => void;
+  off: (event: string, callback: (...args: any[]) => void) => void;
+  emit: (event: string, ...args: any[]) => void;
+}

@@ -1,30 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Config, ScanResult, PreviewResult, BatchProgress, BatchReport, POSITIONS, FORMATS, PositionValue, FormatValue } from './types';
-
-interface Backend {
-  ValidateConfig(cfg: Config): Promise<string | null>;
-  ScanFolder(path: string): Promise<ScanResult>;
-  SelectInputFolder(): Promise<string>;
-  SelectLogoFile(): Promise<string>;
-  SelectOutputFolder(): Promise<string>;
-  SetLogo(path: string): Promise<string | null>;
-  GetLogoPath(): Promise<string>;
-  SetOutputDir(path: string): Promise<string | null>;
-  GetOutputDir(): Promise<string>;
-  GeneratePreview(photoPath: string, cfg: Config, maxWidth: number): Promise<PreviewResult>;
-  StartBatch(inputDir: string, cfg: Config): Promise<BatchReport>;
-  CancelBatch(): Promise<void>;
-  IsProcessing(): Promise<boolean>;
-  OpenFolder(path: string): Promise<string | null>;
-  GetVersion(): Promise<string>;
-  ReadFileAsBase64(path: string): Promise<string>;
-}
-
-interface WailsEvents {
-  on: (event: string, callback: (...args: any[]) => void) => void;
-  off: (event: string, callback: (...args: any[]) => void) => void;
-  emit: (event: string, ...args: any[]) => void;
-}
+import { Config, ScanResult, PreviewResult, BatchProgress, BatchReport, POSITIONS, FORMATS, PositionValue, FormatValue, Backend, WailsEvents } from './types';
 
 declare global {
   interface Window {
