@@ -12,9 +12,9 @@ permissions:
   contents: read
 
 env:
-  GO_VERSION: '1.22'
+  GO_VERSION: '1.23'
   NODE_VERSION: '20'
-  WAILS_VERSION: 'v2.8.1'
+  WAILS_VERSION: 'v2.9.2'
 
 jobs:
   build-windows:
@@ -79,6 +79,9 @@ jobs:
             exit 1
           }
           Write-Host 'Frontend build OK: $(Get-ChildItem dist | Measure-Object).Count files'
+
+      - name: Tidy Go modules
+        run: go mod tidy
 
       - name: Download Go modules
         run: go mod download
@@ -150,15 +153,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run Go tests in Docker
+      - name: Tidy Go modules
         run: |
-          docker run --rm -v '${{ github.workspace }}:/app' -w /app golang:1.22-bookworm go test ./...
+          docker run --rm -v '${{ github.workspace }}:/app' -w /app golang:1.23-bookworm sh -c 'go mod tidy && go test ./...'
 
       - name: Build CLI (cross-compile)
         run: |
           docker run --rm -v '${{ github.workspace }}:/app' -w /app \\
             -e CGO_ENABLED=0 -e GOOS=windows -e GOARCH=amd64 \\
-            golang:1.22-bookworm go build -trimpath -o watermark.exe ./cmd/watermark
+            golang:1.23-bookworm go build -trimpath -o watermark.exe ./cmd/watermark
 
       - name: Upload CLI executable
         uses: actions/upload-artifact@v4
