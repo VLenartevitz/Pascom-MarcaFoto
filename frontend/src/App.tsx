@@ -1,12 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Config, ScanResult, PreviewResult, BatchProgress, BatchReport, POSITIONS, FORMATS, PositionValue, FormatValue, Backend, WailsEvents } from './types';
 
-declare global {
-  interface Window {
-    backend: Backend;
-    events: WailsEvents;
-  }
-}
+// Helper para acessar backend tipado
+const backend = window.backend as Backend;
+const events = window.events as WailsEvents;
 
 const DEFAULT_CONFIG: Config = {
   position: 'bottom-right',
@@ -40,36 +37,35 @@ function App() {
   const logoPreviewRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    const events = window.events;
     events.on('defaults', (cfg: Config) => { setConfig(cfg); });
     events.on('batch:progress', (progress: BatchProgress) => { setBatchProgress(progress); });
     events.on('batch:current', (current: string) => { setCurrentFile(current); });
     events.on('batch:complete', (report: BatchReport) => { setBatchReport(report); setProcessing(false); setStep('complete'); });
     events.on('batch:error', (err: string) => { setError(err); setProcessing(false); });
-    window.backend.GetVersion().then(setVersion);
+    backend.GetVersion().then(setVersion);
     return () => { events.off('defaults', () => {}); events.off('batch:progress', () => {}); events.off('batch:current', () => {}); events.off('batch:complete', () => {}); events.off('batch:error', () => {}); };
   }, []);
 
   useEffect(() => {
-    if (logoPath) { window.backend.ReadFileAsBase64(logoPath).then(setLogoPreview).catch(console.error); window.backend.SetLogo(logoPath).catch(console.error); }
-    else { setLogoPreview(''); window.backend.SetLogo(''); }
+    if (logoPath) { backend.ReadFileAsBase64(logoPath).then(setLogoPreview).catch(console.error); backend.SetLogo(logoPath).catch(console.error); }
+    else { setLogoPreview(''); backend.SetLogo(''); }
   }, [logoPath]);
 
   useEffect(() => {
-    window.backend.GetOutputDir().then(setOutputDir);
-    window.backend.GetLogoPath().then(p => { if (p) setLogoPath(p); });
+    backend.GetOutputDir().then(setOutputDir);
+    backend.GetLogoPath().then(p => { if (p) setLogoPath(p); });
   }, []);
 
   const handleSelectInputFolder = async () => {
-    try { const dir = await window.backend.SelectInputFolder(); if (dir) { setInputDir(dir); setError(''); const result = await window.backend.ScanFolder(dir); setScanResult(result); if (result.count > 0 && !previewPhoto) { setPreviewPhoto(result.files[0]); } if (result.count > 0) setStep('configure'); } } catch (e: any) { setError(e.message || 'Erro ao selecionar pasta'); }
+    try { const dir = await backend.SelectInputFolder(); if (dir) { setInputDir(dir); setError(''); const result = await backend.ScanFolder(dir); setScanResult(result); if (result.count > 0 && !previewPhoto) { setPreviewPhoto(result.files[0]); } if (result.count > 0) setStep('configure'); } } catch (e: any) { setError(e.message || 'Erro ao selecionar pasta'); }
   };
 
   const handleSelectLogo = async () => {
-    try { const file = await window.backend.SelectLogoFile(); if (file) { setLogoPath(file); setError(''); } } catch (e: any) { setError(e.message || 'Erro ao selecionar logo'); }
+    try { const file = await backend.SelectLogoFile(); if (file) { setLogoPath(file); setError(''); } } catch (e: any) { setError(e.message || 'Erro ao selecionar logo'); }
   };
 
   const handleSelectOutputFolder = async () => {
-    try { const dir = await window.backend.SelectOutputFolder(); if (dir) { await window.backend.SetOutputDir(dir); setOutputDir(dir); setError(''); } } catch (e: any) { setError(e.message || 'Erro ao selecionar pasta de sa\u00EDda'); }
+    try { const dir = await backend.SelectOutputFolder(); if (dir) { await backend.SetOutputDir(dir); setOutputDir(dir); setError(''); } } catch (e: any) { setError(e.message || 'Erro ao selecionar pasta de sa\u00EDda'); }
   };
 
   const handleConfigChange = (key: keyof Config, value: any) => { setConfig(prev => ({ ...prev, [key]: value })); setPreviewImg(null); };
@@ -77,18 +73,18 @@ function App() {
   const handleGeneratePreview = async () => {
     if (!previewPhoto || !logoPath) return;
     setError('');
-    try { const result = await window.backend.GeneratePreview(previewPhoto, config, 800); if (result.error) { setError(result.error); } else { setPreviewImg(result); } } catch (e: any) { setError(e.message || 'Erro ao gerar preview'); }
+    try { const result = await backend.GeneratePreview(previewPhoto, config, 800); if (result.error) { setError(result.error); } else { setPreviewImg(result); } } catch (e: any) { setError(e.message || 'Erro ao gerar preview'); }
   };
 
   const handleStartBatch = async () => {
     if (!inputDir || !logoPath || !outputDir) { setError('Preencha todos os campos obrigat\u00F3rios'); return; }
     if (scanResult && scanResult.count === 0) { setError('Nenhuma imagem para processar'); return; }
     setError(''); setProcessing(true); setBatchProgress(null); setBatchReport(null); setCurrentFile(''); setStep('processing');
-    try { await window.backend.StartBatch(inputDir, config); } catch (e: any) { setError(e.message || 'Erro ao iniciar processamento'); setProcessing(false); setStep('configure'); }
+    try { await backend.StartBatch(inputDir, config); } catch (e: any) { setError(e.message || 'Erro ao iniciar processamento'); setProcessing(false); setStep('configure'); }
   };
 
-  const handleCancelBatch = async () => { await window.backend.CancelBatch(); setProcessing(false); };
-  const handleOpenOutput = async () => { if (batchReport?.outDir) { await window.backend.OpenFolder(batchReport.outDir); } };
+  const handleCancelBatch = async () => { await backend.CancelBatch(); setProcessing(false); };
+  const handleOpenOutput = async () => { if (batchReport?.outDir) { await backend.OpenFolder(batchReport.outDir); } };
   const handleNewBatch = () => { setStep('select'); setInputDir(''); setScanResult(null); setPreviewPhoto(''); setPreviewImg(null); setBatchReport(null); setBatchProgress(null); setCurrentFile(''); setError(''); };
 
   return (

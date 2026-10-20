@@ -1,4 +1,4 @@
-// Tipos compartilhados entre frontend e backend
+// Tipos compartilhados entre frontend e backend (SEM declare global)
 
 export interface Config {
   position: string;
@@ -68,7 +68,7 @@ export const FORMATS = [
 export type PositionValue = typeof POSITIONS[number]['value'];
 export type FormatValue = typeof FORMATS[number]['value'];
 
-// Tipos para o backend Wails (evita conflito com tipos gerados)
+// Tipos do backend (para type assertion) - NÃO declare global
 export interface Backend {
   ValidateConfig(cfg: Config): Promise<string | null>;
   ScanFolder(path: string): Promise<ScanResult>;
