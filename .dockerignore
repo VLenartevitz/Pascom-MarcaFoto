@@ -1,0 +1,4 @@
+.git
+bin/
+tests/testdata/in/
+tests/testdata/out/

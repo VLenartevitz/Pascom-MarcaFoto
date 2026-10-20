@@ -1,0 +1,278 @@
+SDD — Aplicativo de marca d’água em lote
+Watermark Studio
+Nome provisório · Aplicativo desktop para Windows
+
+Especificação v1.0
+
+Alto desempenho
+Processamento paralelo e memória controlada.
+
+
+Privacidade local
+Fotos processadas no próprio computador.
+
+
+Lotes de até 500 fotos
+Fila de tarefas com progresso individual e geral.
+
+
+Desktop moderno
+Interface React integrada ao backend Go.
+
+
+
+
+1. Objetivo do projeto
+Desenvolver um aplicativo desktop para Windows que permita selecionar centenas de fotografias, aplicar uma marca d’água de imagem automaticamente e exportar os resultados em uma pasta separada, sem alterar os arquivos originais.
+O aplicativo deverá priorizar:
+- Velocidade de processamento.
+- Baixo consumo de memória.
+- Facilidade de uso.
+- Preservação da resolução e da orientação das fotografias.
+- Funcionamento offline após a instalação.
+- Distribuição em formato executável para Windows.
+2. Tecnologias e responsabilidades
+Tecnologia	Responsabilidade
+Go	Backend, sistema de arquivos, fila de tarefas e concorrência.
+libvips	Leitura, transformação, composição e exportação de imagens.
+Wails	Integração entre Go e a interface desktop.
+React	Componentes e estrutura visual da interface.
+TypeScript	Tipagem, validação e organização do frontend.
+CSS	Tema visual, animações e adaptação da interface.
+Decisão arquitetural: o frontend não deve manipular diretamente os arquivos. Ele solicita as operações ao backend Go, que controla a leitura, o processamento e a gravação.
+A integração e o empacotamento do libvips no Windows serão validados em um protótipo técnico antes da implementação completa.
+3. Requisitos funcionais
+ID — requisito verificável
+RF-01 — Seleção de fotografias
+Permitir selecionar uma pasta local, identificar imagens compatíveis e exibir a quantidade de arquivos encontrados, ignorados ou inválidos.
+
+
+
+RF-02 — Seleção da marca d’água
+Permitir importar uma logo em PNG com transparência e outros formatos compatíveis definidos durante a implementação.
+
+
+
+RF-03 — Configuração visual
+Definir posição, tamanho, margem e opacidade. A configuração deve funcionar independentemente das dimensões de cada fotografia.
+
+
+
+RF-04 — Pré-visualização
+Exibir uma fotografia de exemplo com a marca d’água aplicada, atualizando a visualização conforme as configurações mudarem.
+
+
+
+RF-05 — Processamento em lote
+Processar até 500 imagens por execução, com concorrência limitada e atualização do progresso.
+
+
+
+RF-06 — Exportação segura
+Salvar os resultados em uma pasta escolhida, mantendo os originais intactos e evitando sobrescrever arquivos existentes sem autorização.
+
+
+
+RF-07 — Relatório da execução
+Mostrar arquivos concluídos, falhas, tempo decorrido e caminho da pasta de saída.
+
+
+
+4. Requisitos não funcionais
+ID	Requisito
+RNF-01	Executar o processamento sem enviar imagens pela internet.
+RNF-02	Limitar a concorrência para evitar consumo excessivo de memória.
+RNF-03	Preservar as dimensões originais, salvo configuração explícita em contrário.
+RNF-04	Manter a interface responsiva durante o processamento.
+RNF-05	Registrar erros por arquivo sem interromper desnecessariamente o lote inteiro.
+RNF-06	Permitir cancelar uma execução de forma controlada.
+RNF-07	Distribuir uma versão funcional para Windows, com as dependências nativas necessárias.
+RNF-08	Validar desempenho em conjuntos reais de até 500 fotografias.
+A qualidade de exportação deverá ser configurável quando o formato oferecer esse controle. Não será possível garantir ausência de perda visual em formatos com compressão com perdas, como JPEG.
+5. Arquitetura do sistema
+#chatgpt-mermaid-_r_86_{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:16px;fill:rgb(237, 237, 237);}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#chatgpt-mermaid-_r_86_ .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#chatgpt-mermaid-_r_86_ .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#chatgpt-mermaid-_r_86_ .error-icon{fill:rgb(48, 48, 48);}#chatgpt-mermaid-_r_86_ .error-text{fill:rgb(237, 237, 237);stroke:rgb(237, 237, 237);}#chatgpt-mermaid-_r_86_ .edge-thickness-normal{stroke-width:1px;}#chatgpt-mermaid-_r_86_ .edge-thickness-thick{stroke-width:3.5px;}#chatgpt-mermaid-_r_86_ .edge-pattern-solid{stroke-dasharray:0;}#chatgpt-mermaid-_r_86_ .edge-thickness-invisible{stroke-width:0;fill:none;}#chatgpt-mermaid-_r_86_ .edge-pattern-dashed{stroke-dasharray:3;}#chatgpt-mermaid-_r_86_ .edge-pattern-dotted{stroke-dasharray:2;}#chatgpt-mermaid-_r_86_ .marker{fill:rgb(175, 175, 175);stroke:rgb(175, 175, 175);}#chatgpt-mermaid-_r_86_ .marker.cross{stroke:rgb(175, 175, 175);}#chatgpt-mermaid-_r_86_ svg{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:16px;}#chatgpt-mermaid-_r_86_ p{margin:0;}#chatgpt-mermaid-_r_86_ .label{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";color:rgb(237, 237, 237);}#chatgpt-mermaid-_r_86_ .cluster-label text{fill:rgb(237, 237, 237);}#chatgpt-mermaid-_r_86_ .cluster-label span{color:rgb(237, 237, 237);}#chatgpt-mermaid-_r_86_ .cluster-label span p{background-color:transparent;}#chatgpt-mermaid-_r_86_ .label text,#chatgpt-mermaid-_r_86_ span{fill:rgb(237, 237, 237);color:rgb(237, 237, 237);}#chatgpt-mermaid-_r_86_ .node rect,#chatgpt-mermaid-_r_86_ .node circle,#chatgpt-mermaid-_r_86_ .node ellipse,#chatgpt-mermaid-_r_86_ .node polygon,#chatgpt-mermaid-_r_86_ .node path{fill:rgb(9, 23, 44);stroke:rgb(31, 78, 148);stroke-width:1px;}#chatgpt-mermaid-_r_86_ .rough-node .label text,#chatgpt-mermaid-_r_86_ .node .label text,#chatgpt-mermaid-_r_86_ .image-shape .label,#chatgpt-mermaid-_r_86_ .icon-shape .label{text-anchor:middle;}#chatgpt-mermaid-_r_86_ .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#chatgpt-mermaid-_r_86_ .rough-node .label,#chatgpt-mermaid-_r_86_ .node .label,#chatgpt-mermaid-_r_86_ .image-shape .label,#chatgpt-mermaid-_r_86_ .icon-shape .label{text-align:center;}#chatgpt-mermaid-_r_86_ .node.clickable{cursor:pointer;}#chatgpt-mermaid-_r_86_ .root .anchor path{fill:rgb(175, 175, 175)!important;stroke-width:0;stroke:rgb(175, 175, 175);}#chatgpt-mermaid-_r_86_ .arrowheadPath{fill:rgb(175, 175, 175);}#chatgpt-mermaid-_r_86_ .edgePath .path{stroke:rgb(175, 175, 175);stroke-width:1px;}#chatgpt-mermaid-_r_86_ .flowchart-link{stroke:rgb(175, 175, 175);fill:none;}#chatgpt-mermaid-_r_86_ .edgeLabel{background-color:rgb(0, 0, 0);text-align:center;}#chatgpt-mermaid-_r_86_ .edgeLabel p{background-color:rgb(0, 0, 0);}#chatgpt-mermaid-_r_86_ .edgeLabel rect{opacity:0.5;background-color:rgb(0, 0, 0);fill:rgb(0, 0, 0);}#chatgpt-mermaid-_r_86_ .labelBkg{background-color:rgba(0, 0, 0, 0.5);}#chatgpt-mermaid-_r_86_ .cluster rect{fill:rgb(48, 48, 48);stroke:rgba(255, 255, 255, 0.15);stroke-width:1px;}#chatgpt-mermaid-_r_86_ .cluster text{fill:rgb(237, 237, 237);}#chatgpt-mermaid-_r_86_ .cluster span{color:rgb(237, 237, 237);}#chatgpt-mermaid-_r_86_ div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:12px;background:rgb(48, 48, 48);border:1px solid rgba(255, 255, 255, 0.15);border-radius:2px;pointer-events:none;z-index:100;}#chatgpt-mermaid-_r_86_ .flowchartTitleText{text-anchor:middle;font-size:18px;fill:rgb(237, 237, 237);}#chatgpt-mermaid-_r_86_ rect.text{fill:none;stroke-width:0;}#chatgpt-mermaid-_r_86_ .icon-shape,#chatgpt-mermaid-_r_86_ .image-shape{background-color:rgb(0, 0, 0);text-align:center;}#chatgpt-mermaid-_r_86_ .icon-shape p,#chatgpt-mermaid-_r_86_ .image-shape p{background-color:rgb(0, 0, 0);padding:2px;}#chatgpt-mermaid-_r_86_ .icon-shape .label rect,#chatgpt-mermaid-_r_86_ .image-shape .label rect{opacity:0.5;background-color:rgb(0, 0, 0);fill:rgb(0, 0, 0);}#chatgpt-mermaid-_r_86_ .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#chatgpt-mermaid-_r_86_ .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#chatgpt-mermaid-_r_86_ .node .neo-node{stroke:rgb(31, 78, 148);}#chatgpt-mermaid-_r_86_ [data-look="neo"].node rect,#chatgpt-mermaid-_r_86_ [data-look="neo"].cluster rect,#chatgpt-mermaid-_r_86_ [data-look="neo"].node polygon{stroke:url(#chatgpt-mermaid-_r_86_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-_r_86_ [data-look="neo"].swimlane.cluster rect{filter:none;}#chatgpt-mermaid-_r_86_ [data-look="neo"].node path{stroke:url(#chatgpt-mermaid-_r_86_-gradient);stroke-width:1px;}#chatgpt-mermaid-_r_86_ [data-look="neo"].node .outer-path{filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-_r_86_ [data-look="neo"].node .neo-line path{stroke:rgb(31, 78, 148);filter:none;}#chatgpt-mermaid-_r_86_ [data-look="neo"].node circle{stroke:url(#chatgpt-mermaid-_r_86_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-_r_86_ [data-look="neo"].node circle .state-start{fill:#000000;}#chatgpt-mermaid-_r_86_ [data-look="neo"].icon-shape .icon{fill:url(#chatgpt-mermaid-_r_86_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-_r_86_ [data-look="neo"].icon-shape .icon-neo path{stroke:url(#chatgpt-mermaid-_r_86_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-_r_86_ .node text{font-size:14px;font-weight:600;letter-spacing:normal;fill:rgb(153, 206, 255);}#chatgpt-mermaid-_r_86_ .edgeLabels text{font-size:13px;font-weight:600;letter-spacing:-0.08px;fill:rgb(153, 206, 255);}#chatgpt-mermaid-_r_86_ .node tspan[font-weight="normal"],#chatgpt-mermaid-_r_86_ .edgeLabels tspan[font-weight="normal"]{font-weight:600;}#chatgpt-mermaid-_r_86_ .edgeLabel .label rect{opacity:1;rx:13px;ry:13px;fill:rgb(0, 14, 26);stroke:rgb(26, 62, 95);stroke-width:1px;}#chatgpt-mermaid-_r_86_ .node rect,#chatgpt-mermaid-_r_86_ .node circle,#chatgpt-mermaid-_r_86_ .node ellipse,#chatgpt-mermaid-_r_86_ .node polygon,#chatgpt-mermaid-_r_86_ .node path{fill:rgb(0, 40, 77);stroke:rgba(255, 255, 255, 0.1);stroke-width:1px;}#chatgpt-mermaid-_r_86_ .node rect{rx:16px;ry:16px;}#chatgpt-mermaid-_r_86_ .node.mermaid-decision .label-container{fill:rgb(0, 14, 26);stroke:rgb(26, 62, 95);stroke-dasharray:2,2;}#chatgpt-mermaid-_r_86_ .edgePaths .flowchart-link{stroke:rgb(175, 175, 175);stroke-width:1px;stroke-linecap:round;stroke-linejoin:round;}#chatgpt-mermaid-_r_86_ .marker{fill:rgb(175, 175, 175);stroke:rgb(175, 175, 175);}#chatgpt-mermaid-_r_86_ :root{--mermaid-font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";}Interface React + TypeScriptBindings WailsBackend GoValidação e descoberta dearquivosGerenciador de tarefasWorkers com concorrêncialimitadaMotor libvipsComposição da marca d'águaExportação localRelatório e progresso
+
+
+
+
+
+Fluxo de processamento
+1. O usuário seleciona a pasta de entrada.
+2. O backend identifica as imagens compatíveis.
+3. O usuário escolhe a logo e configura sua posição, tamanho e opacidade.
+4. O frontend solicita uma pré-visualização.
+5. O backend valida a pasta de saída e inicia a fila.
+6. Os workers processam as imagens em paralelo, dentro dos limites configurados.
+7. Cada resultado é salvo em arquivo temporário e transferido para o destino definitivo somente após a gravação bem-sucedida.
+8. O frontend recebe atualizações de progresso e exibe o relatório final.
+6. Estrutura de pastas proposta
+watermark-studio/
+├── app.go
+├── main.go
+├── go.mod
+├── internal/
+│   ├── images/
+│   │   ├── decoder.go
+│   │   ├── watermark.go
+│   │   ├── encoder.go
+│   │   └── preview.go
+│   ├── batch/
+│   │   ├── manager.go
+│   │   ├── worker.go
+│   │   └── progress.go
+│   ├── files/
+│   │   ├── scanner.go
+│   │   └── output.go
+│   └── config/
+│       └── settings.go
+├── frontend/
+│   └── src/
+│       ├── components/
+│       ├── pages/
+│       ├── hooks/
+│       ├── services/
+│       ├── types/
+│       └── styles/
+├── build/
+├── assets/
+└── tests/
+    ├── unit/
+    ├── integration/
+    └── benchmarks/
+
+
+A estrutura é uma proposta inicial. Os arquivos gerados pelo Wails e os detalhes de integração com libvips serão ajustados conforme o projeto compilável for estabelecido.
+7. Design da interface
+A interface terá aparência moderna, com hierarquia visual clara e poucas etapas para iniciar um lote.
+
+Watermark Studio
+PROCESSAMENTO LOCAL
+
+
+
+Selecionar fotografias
+Escolha uma pasta ou arraste suas imagens para a área de trabalho.
+Até 500 imagens por lote
+
+MARCA D'ÁGUA
+
+Logo selecionada
+PNG transparente
+
+
+POSIÇÃO
+↖
+
+
+↑
+
+
+↗
+
+
+←
+
+
+•
+
+
+→
+
+
+↙
+
+
+↓
+
+
+↘
+
+
+
+Canto inferior direito
+
+
+
+Tamanho da logo
+20%
+
+
+
+
+Arquivos prontos: 0/500
+Pronto para iniciar
+
+Iniciar processamento
+
+Representação conceitual da organização da interface, não uma captura do aplicativo implementado.
+Os controles definitivos deverão incluir tamanho relativo, opacidade, margem, formato de saída, qualidade e pasta de destino. A pré-visualização usará uma versão reduzida da imagem para evitar operações desnecessariamente pesadas.
+8. Estratégia de desempenho
+O objetivo é maximizar a velocidade sem comprometer a estabilidade.
+- Concorrência limitada: começar com um número configurável de workers, ajustado conforme os núcleos disponíveis e a memória do computador.
+- Processamento sob demanda: evitar carregar as 500 fotografias completas simultaneamente na memória.
+- Operações nativas: delegar as transformações e a composição ao libvips sempre que possível.
+- Pré-visualização independente: utilizar imagens reduzidas e evitar bloquear a fila de processamento.
+- Medição real: registrar tempo total, tempo por imagem, consumo de memória e erros.
+- Cancelamento: interromper a fila e finalizar ou limpar os arquivos temporários de maneira segura.
+Não será estabelecida uma promessa de velocidade antes dos benchmarks. O desempenho depende das dimensões das fotos, do formato, do armazenamento e do hardware.
+9. Tratamento de erros e integridade
+Situação	Comportamento esperado
+Imagem corrompida	Registrar falha e continuar o lote.
+Logo inválida	Impedir o início e explicar o problema.
+Falta de espaço	Interromper novas gravações e informar o usuário.
+Arquivo de destino existente	Aplicar a política de conflito escolhida.
+Cancelamento	Parar novas tarefas e tratar as tarefas em andamento com segurança.
+Erro durante a exportação	Remover o temporário incompleto, quando possível, e registrar a falha.
+Falha de um worker	Isolar a tarefa e evitar que o erro encerre toda a aplicação.
+Os originais nunca serão usados como destino de gravação. A preservação dos metadados, incluindo EXIF, deverá ser testada explicitamente; não se deve presumir que toda a informação original será mantida automaticamente.
+10. Plano de testes e validação
+O aplicativo só será considerado pronto para distribuição após passar pelos seguintes testes:
+1. Testes unitários: cálculo de escala, margens, posições, opacidade e nomes de arquivos.
+2. Testes de integração: aplicação da logo em PNG, JPEG e outros formatos suportados.
+3. Teste de integridade: comparação dos arquivos originais antes e depois do processamento.
+4. Teste de carga: execução de lotes com 10, 100 e 500 fotografias.
+5. Teste de estabilidade: fotografias grandes, arquivos inválidos, falta de espaço e cancelamento.
+6. Teste de distribuição: instalação e execução em Windows sem ferramentas de desenvolvimento previamente instaladas.
+As métricas principais serão o tempo total do lote, imagens processadas por segundo, pico de memória e taxa de falhas. Os testes deverão ser repetidos em condições comparáveis para permitir uma avaliação justa das otimizações.
+11. Fases de implementação
+
+Fase 1 — Protótipo técnico
+Validar Go, libvips e Wails no Windows, incluindo composição de uma logo e exportação de uma imagem.
+
+
+
+
+Fase 2 — Interface e pré-visualização
+Criar os componentes React, seleção de arquivos, configurações e visualização do resultado.
+
+
+
+
+Fase 3 — Processamento em lote
+Implementar workers, progresso, cancelamento, recuperação de erros e exportação segura.
+
+
+
+
+Fase 4 — Otimização e benchmarks
+Medir os resultados, ajustar concorrência e memória e testar lotes de até 500 fotos.
+
+
+
+
+Fase 5 — Empacotamento
+Preparar o executável, as bibliotecas nativas, a instalação e a validação em um Windows limpo.
+
+
+
+12. Critérios de aceitação
+A primeira versão será aprovada quando:
+- Processar até 500 imagens compatíveis em um único lote.
+- Aplicar corretamente a marca d’água nas posições e escalas configuradas.
+- Preservar os originais e a resolução das fotografias.
+- Exibir progresso, erros e resumo da execução.
+- Permitir cancelar o processamento sem corromper os originais.
+- Funcionar localmente sem depender de serviços remotos.
+- Ser distribuída e executada em um ambiente Windows de teste.
+- Ter resultados de benchmark documentados.
+Próximo passo recomendado: transformar este SDD em um projeto inicial compilável, começando pela Fase 1. O primeiro marco técnico deve ser uma aplicação mínima que abre no Windows, recebe uma foto e uma logo, aplica a marca d’água via libvips e exporta o resultado. Isso valida a parte mais arriscada da arquitetura antes de investir na interface completa.

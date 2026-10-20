@@ -1,0 +1,38 @@
+# Binários compilados
+/bin/
+/build/
+/dist/
+
+# Wails
+wails.json
+frontend/dist/
+
+# Node.js
+frontend/node_modules/
+frontend/*.log
+
+# Go
+*.exe
+*.test
+*.prof
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testes temporários
+tests/testdata/out/
+!tests/testdata/out/.gitkeep
+
+# Logs
+*.log
+
+# Variáveis de ambiente
+.env
+.env.local
